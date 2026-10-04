@@ -449,7 +449,6 @@ document.querySelectorAll('.menu a').forEach(function(a){
     </div>
     <div class="gr-bot">
       <p class="gr-txt">Hemos recibido vuestra confirmaci&oacute;n.</p>
-      <button type="button" class="gr-volver" id="gr-volver">Volver a la web</button>
       <button type="button" class="gr-otra" id="gr-otra">Enviar otra confirmaci&oacute;n</button>
     </div>
   </div>
@@ -535,25 +534,16 @@ document.querySelectorAll('.menu a').forEach(function(a){
         err.textContent='No hemos podido enviarlo. Revisad la conexion e intentadlo otra vez.';
       });
     });
-    var gr=document.getElementById('gracias');
     function abrirGracias(){
-      gr.hidden=false; document.documentElement.style.overflow='hidden';
-      try{ history.pushState({gracias:1},''); }catch(e){}
+      var gr=document.getElementById('gracias');
+      document.body.innerHTML='';
+      document.body.appendChild(gr);
+      gr.hidden=false;
+      window.scrollTo(0,0);
+      document.getElementById('gr-otra').addEventListener('click',function(){
+        location.hash='rsvp'; location.reload();
+      });
     }
-    function cerrarGracias(){
-      gr.hidden=true; document.documentElement.style.overflow='';
-      var b=form.querySelector('.env'); if(b.disabled) b.textContent='Confirmaci\u00f3n enviada \u2665';
-    }
-    window.addEventListener('popstate',function(){ if(!gr.hidden) cerrarGracias(); });
-    function salir(){ if(history.state&&history.state.gracias){ history.back(); } else { cerrarGracias(); } }
-    document.getElementById('gr-volver').addEventListener('click',function(){
-      salir();
-    });
-    document.getElementById('gr-otra').addEventListener('click',function(){
-      salir(); form.reset(); pintar();
-      var b=form.querySelector('.env'); b.disabled=false; b.textContent='Enviar confirmacion';
-      setTimeout(function(){ form.scrollIntoView({behavior:'smooth',block:'start'}); },50);
-    });
   })();
   </script>
 </section>
