@@ -240,6 +240,20 @@ footer .grito span{color:var(--crema)}
 #gracias .gr-txt{margin:0 0 14px;color:#fff;font-size:16px;text-shadow:0 1px 6px rgba(20,50,45,.6)}
 .gr-volver{display:block;width:100%;background:var(--melo);color:var(--verde);border:0;border-radius:99px;padding:15px;font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.17em;text-transform:uppercase;cursor:pointer}
 .gr-otra{margin-top:10px;background:none;border:0;color:#fff;font:inherit;font-size:13.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px}
+
+/* --- dibujos con vida (como Kai en People Growth) --- */
+@keyframes flota{0%,100%{translate:0 0}50%{translate:0 -4px}}
+@keyframes salta{0%,100%{translate:0 0;rotate:0deg}35%{translate:0 -12px;rotate:-6deg}65%{translate:0 -3px;rotate:3deg}}
+@keyframes saluda{0%,45%,100%{rotate:0deg}8%{rotate:-9deg}16%{rotate:8deg}24%{rotate:-7deg}32%{rotate:5deg}40%{rotate:-2deg}}
+@keyframes celebra{0%{scale:0;rotate:-30deg}55%{scale:1.2;rotate:8deg}75%{scale:.95;rotate:-4deg}100%{scale:1;rotate:0deg}}
+@keyframes bota{0%,100%{translate:0 0}50%{translate:0 -6px}}
+.vivo{animation:flota 3.4s ease-in-out var(--dl,0s) infinite}
+.vivo.saluda{animation:saluda 4s ease-in-out var(--dl,0s) infinite;transform-origin:50% 90%}
+.vivo.salta{animation:salta .6s ease-out}
+.gr-dood{width:78px;margin:0 auto 14px;filter:drop-shadow(0 4px 10px rgba(20,50,45,.45));
+  animation:celebra .9s cubic-bezier(.3,1.4,.5,1) both,flota 3.4s ease-in-out .9s infinite}
+.env-dood{display:inline-block;width:22px;height:auto;vertical-align:middle;margin:-4px 10px 0 0;animation:bota .7s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta,.gr-dood,.env-dood{animation:none}}
 </style>
 </head>
 <body>
@@ -521,7 +535,8 @@ document.querySelectorAll('.menu a').forEach(function(a){
 
       var boton=form.querySelector('.env');
       boton.disabled=true;
-      boton.textContent='Enviando...';
+      var an=document.querySelector('.dood[data-d="anillo"]');
+      boton.innerHTML=(an?'<img class="env-dood" src="'+an.src+'" alt="">':'')+'Enviando...';
 
       function listo(){
         var nom=datos.nombre.split(' ')[0];
@@ -545,8 +560,11 @@ document.querySelectorAll('.menu a').forEach(function(a){
     });
     function abrirGracias(){
       var gr=document.getElementById('gracias');
+      var an=document.querySelector('.dood[data-d="anillo"]');
       document.body.innerHTML='';
       document.body.appendChild(gr);
+      if(an){var c=document.createElement('img');c.src=an.src;c.alt='';c.className='gr-dood';
+        gr.querySelector('.gr-top').insertBefore(c,gr.querySelector('.gr-t'));}
       gr.hidden=false;
       window.scrollTo(0,0);
       document.getElementById('gr-otra').addEventListener('click',function(){
@@ -606,5 +624,35 @@ function ok(){b.textContent='¡Copiado!';setTimeout(function(){b.textContent='Co
 function fb(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(a)}
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fb)}else fb();
 });});
+</script>
+<script>
+/* Dibujos con vida, como Kai en People Growth: flotan, los payeses saludan
+   y todos dan un saltito al tocarlos o al pasar el raton. Los dibujos no
+   reciben clics (pointer-events:none), asi que el toque se mira por posicion
+   y nunca tapa enlaces. Quietos si el movil pide reducir movimiento. */
+(function(){
+  var dibujos=[].slice.call(document.querySelectorAll('.dood, section > img:not(.dood)'));
+  dibujos.forEach(function(d,i){
+    d.classList.add('vivo');
+    d.style.setProperty('--dl',(-(i*0.9)%3.4).toFixed(1)+'s');
+    d.addEventListener('animationend',function(e){ if(e.animationName==='salta') d.classList.remove('salta'); });
+  });
+  var payeses=document.querySelector('img[alt="Payeses mallorquines"]');
+  if(payeses) payeses.classList.add('saluda');
+  function dentro(d,e){ var r=d.getBoundingClientRect();
+    return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom; }
+  function salta(d){ d.classList.remove('salta'); void d.offsetWidth; d.classList.add('salta'); }
+  document.addEventListener('pointerdown',function(e){
+    dibujos.forEach(function(d){ if(dentro(d,e)) salta(d); });
+  });
+  document.addEventListener('pointermove',function(e){
+    if(e.pointerType!=='mouse') return;
+    dibujos.forEach(function(d){
+      var si=dentro(d,e);
+      if(si&&!d._encima) salta(d);
+      d._encima=si;
+    });
+  });
+})();
 </script>
 </body></html>
