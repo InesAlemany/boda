@@ -269,9 +269,69 @@ footer .grito span{color:var(--crema)}
 .vivo.saluda{animation:saluda 4s ease-in-out var(--dl,0s) infinite;transform-origin:50% 90%}
 .vivo.salta{animation:salta .6s ease-out}
 @media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta{animation:none}}
+
+/* --- sobre de entrada --- */
+#sobre{position:fixed;inset:0;z-index:200;background:var(--papel);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .7s ease .9s,visibility 0s linear 1.6s}
+#sobre .s-arriba{font-family:var(--hand);font-weight:700;font-size:30px;color:var(--verde);margin:0 0 26px;text-align:center;line-height:1.1}
+#sobre .s-abajo{margin:30px 0 0;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(39,99,89,.6);transition:opacity .3s}
+.env-s{position:relative;width:290px;height:190px;perspective:900px;cursor:pointer;filter:drop-shadow(0 14px 22px rgba(120,95,70,.22))}
+.env-s .cuerpo{position:absolute;inset:0;background:var(--crema);border-radius:6px;overflow:hidden}
+.env-s .cuerpo::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(to top right,transparent 49.5%,rgba(39,99,89,.10) 50%,transparent 51%) left/50% 100% no-repeat,
+  linear-gradient(to top left,transparent 49.5%,rgba(39,99,89,.10) 50%,transparent 51%) right/50% 100% no-repeat}
+.env-s .carta{position:absolute;left:14px;right:14px;top:14px;height:160px;background:#fff;border-radius:4px;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  box-shadow:0 2px 8px rgba(39,99,89,.12);transition:transform .8s cubic-bezier(.3,1.2,.5,1) .35s}
+.env-s .carta b{font-family:var(--brush);font-weight:400;font-size:34px;color:var(--verde);line-height:1}
+.env-s .carta span{margin-top:8px;font-size:11px;letter-spacing:.24em;color:var(--terra)}
+.env-s .delante{position:absolute;inset:0;z-index:2;border-radius:0 0 6px 6px;
+  background:linear-gradient(to top,#EED6C3,var(--crema));clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%)}
+.env-s .solapa{position:absolute;left:0;right:0;top:0;height:60%;z-index:3;transform-origin:top center;
+  transition:transform .55s ease,z-index 0s linear .28s}
+.env-s .solapa::before{content:"";position:absolute;inset:0;background:#EBCDB6;clip-path:polygon(0 0,100% 0,50% 100%);border-radius:6px 6px 0 0}
+.env-s .sello{position:absolute;left:50%;top:60%;width:66px;height:66px;margin:-33px 0 0 -33px;z-index:4;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ED9466,var(--terra) 60%,#C96A3C);
+  box-shadow:0 3px 8px rgba(120,60,30,.35),inset 0 0 0 4px rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;transition:transform .35s ease,opacity .35s ease;animation:latido 2.2s ease-in-out infinite}
+.env-s .sello span{font-family:var(--brush);font-size:23px;color:var(--crema);transform:rotate(-6deg)}
+@keyframes latido{0%,100%{scale:1}50%{scale:1.07}}
+#sobre.abierto .sello{transform:scale(.4);opacity:0;animation:none}
+#sobre.abierto .solapa{transform:rotateX(180deg);z-index:0}
+#sobre.abierto .carta{transform:translateY(-118px)}
+#sobre.abierto .s-abajo{opacity:0}
+#sobre.fuera{opacity:0;visibility:hidden}
+@media (prefers-reduced-motion:reduce){#sobre,#sobre *{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<div id="sobre" role="dialog" aria-label="Invitaci&oacute;n">
+  <p class="s-arriba">Ten&eacute;is una invitaci&oacute;n</p>
+  <div class="env-s" id="env-s" role="button" tabindex="0" aria-label="Abrir la invitaci&oacute;n">
+    <div class="cuerpo"></div>
+    <div class="carta"><b>In&eacute;s y Marc</b><span>17 &middot; 04 &middot; 2027</span></div>
+    <div class="delante"></div>
+    <div class="solapa"></div>
+    <div class="sello"><span>I y M</span></div>
+  </div>
+  <p class="s-abajo">Toca el sello para abrir</p>
+</div>
+<script>
+/* Sobre de entrada: solo la primera vez que cada invitado abre la web.
+   Se recuerda en el propio movil; si el navegador no deja guardarlo,
+   el sobre simplemente vuelve a salir. */
+(function(){
+  var s=document.getElementById('sobre'),e=document.getElementById('env-s'),CLAVE='boda-im-sobre';
+  try{ if(localStorage.getItem(CLAVE)==='1'){ s.remove(); return; } }catch(x){}
+  function abrir(){ if(s.classList.contains('abierto')) return; s.classList.add('abierto');
+    try{ localStorage.setItem(CLAVE,'1'); }catch(x){}
+    setTimeout(function(){ s.classList.add('fuera'); },1300);
+    setTimeout(function(){ s.remove(); },2400); }
+  e.addEventListener('click',abrir);
+  e.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();abrir();} });
+  
+})();
+</script>
 
 <div class="top">
   <span class="logo">I y M</span>
