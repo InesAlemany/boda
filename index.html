@@ -246,15 +246,12 @@ footer .grito span{color:var(--crema)}
 @keyframes flota{0%,100%{translate:0 0}50%{translate:0 -4px}}
 @keyframes salta{0%,100%{translate:0 0;rotate:0deg}35%{translate:0 -12px;rotate:-6deg}65%{translate:0 -3px;rotate:3deg}}
 @keyframes saluda{0%,45%,100%{rotate:0deg}8%{rotate:-9deg}16%{rotate:8deg}24%{rotate:-7deg}32%{rotate:5deg}40%{rotate:-2deg}}
-@keyframes celebra{0%{scale:0;rotate:-30deg}55%{scale:1.2;rotate:8deg}75%{scale:.95;rotate:-4deg}100%{scale:1;rotate:0deg}}
 @keyframes gira{to{rotate:360deg}}
 .vivo{animation:flota 3.4s ease-in-out var(--dl,0s) infinite}
 .vivo.saluda{animation:saluda 4s ease-in-out var(--dl,0s) infinite;transform-origin:50% 90%}
 .vivo.salta{animation:salta .6s ease-out}
-.gr-dood{width:150px;margin:0 auto 14px;filter:drop-shadow(0 4px 10px rgba(20,50,45,.45));
-  animation:celebra .9s cubic-bezier(.3,1.4,.5,1) both,flota 3.4s ease-in-out .9s infinite}
 .env-dood{display:inline-block;width:22px;height:auto;vertical-align:middle;margin:-4px 10px 0 0;animation:gira 1.2s linear infinite}
-@media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta,.gr-dood,.env-dood{animation:none}}
+@media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta,.env-dood{animation:none}}
 </style>
 </head>
 <body>
@@ -561,11 +558,8 @@ document.querySelectorAll('.menu a').forEach(function(a){
     });
     function abrirGracias(){
       var gr=document.getElementById('gracias');
-      var an=document.querySelector('img[alt="Payeses mallorquines"]');
       document.body.innerHTML='';
       document.body.appendChild(gr);
-      if(an){var c=document.createElement('img');c.src=an.src;c.alt='';c.className='gr-dood';
-        gr.querySelector('.gr-top').insertBefore(c,gr.querySelector('.gr-t'));}
       gr.hidden=false;
       window.scrollTo(0,0);
       document.getElementById('gr-otra').addEventListener('click',function(){
