@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Ines y Marc//Boda//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:boda-ines-marc-20270417@inesalemany.github.io
+DTSTAMP:20261014T120000Z
+DTSTART:20270417T103000Z
+DTEND:20270418T000000Z
+SUMMARY:Boda de Inés y Marc
+LOCATION:Ermita de Portals Nous\, Mallorca
+DESCRIPTION:12:30 Convocatoria en la Ermita de Portals Nous\n14:00 Autocares hacia Son Termes\n14:30 Llegada a Son Termes\n\nTodos los detalles: https://inesalemany.github.io/boda/
+URL:https://inesalemany.github.io/boda/
+BEGIN:VALARM
+TRIGGER:-P7D
+ACTION:DISPLAY
+DESCRIPTION:Boda de Inés y Marc en una semana
+END:VALARM
+END:VEVENT
+END:VCALENDAR
