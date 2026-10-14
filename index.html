@@ -274,6 +274,7 @@ footer .grito span{color:var(--crema)}
 #sobre{position:fixed;inset:0;z-index:200;background:var(--papel);display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity .4s ease,visibility 0s linear .4s}
 #sobre .s-arriba{font-family:var(--hand);font-weight:700;font-size:30px;color:var(--verde);margin:0 0 26px;text-align:center;line-height:1.1}
+#sobre .s-arriba span{display:block;margin-top:6px;font-family:var(--brush);font-weight:400;font-size:44px;text-transform:uppercase;color:var(--terra);transform:rotate(-3deg)}
 #sobre .s-abajo{margin:30px 0 0;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(39,99,89,.6);transition:opacity .3s}
 .env-s{position:relative;width:290px;height:190px;perspective:900px;cursor:pointer;filter:drop-shadow(0 14px 22px rgba(120,95,70,.22))}
 .env-s .cuerpo{position:absolute;inset:0;background:var(--crema);border-radius:6px;overflow:hidden}
@@ -336,11 +337,17 @@ footer .grito span{color:var(--crema)}
   .tira{justify-content:center}
   #gracias{max-width:none}
 }
+
+/* --- avion a Mallorca: avanza al bajar por la web --- */
+.vuelo{position:absolute;left:0;right:0;bottom:-11px;height:22px;pointer-events:none;z-index:61}
+.vuelo .estela{position:absolute;left:14px;top:10px;height:0;width:0;border-top:2px dashed var(--terra);opacity:.8}
+.vuelo .avion{position:absolute;top:0;left:4px;width:22px;height:22px;transform:translateX(0)}
+.vuelo .avion svg{display:block;width:22px;height:22px;transform:rotate(90deg)}
 </style>
 </head>
 <body>
 <div id="sobre" role="dialog" aria-label="Invitaci&oacute;n">
-  <p class="s-arriba">Ten&eacute;is una invitaci&oacute;n</p>
+  <p class="s-arriba">Psst&hellip; <span>nos casamooos</span></p>
   <div class="env-s" id="env-s" role="button" tabindex="0" aria-label="Abrir la invitaci&oacute;n">
     <div class="cuerpo"></div>
     <div class="carta"><b>In&eacute;s y Marc</b><span>17 &middot; 04 &middot; 2027</span></div>
@@ -348,7 +355,7 @@ footer .grito span{color:var(--crema)}
     <div class="solapa"></div>
     <div class="sello"><span>I y M</span></div>
   </div>
-  <p class="s-abajo">Toca el sello para abrir</p>
+  <p class="s-abajo">Abrid con cuidado</p>
 </div>
 <script>
 /* Sobre de entrada: solo la primera vez que cada invitado abre la web.
@@ -839,6 +846,26 @@ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.write
     if(!x&&!y){var r=grito.getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height/2;}
     lanzar(x,y);
   });
+})();
+</script>
+<script>
+/* Avion a Mallorca: una estela discontinua en el borde de la cabecera que
+   avanza con lo que se ha leido de la pagina, de izquierda a derecha. */
+(function(){
+  var top=document.querySelector('.top'); if(!top) return;
+  var v=document.createElement('div'); v.className='vuelo'; v.setAttribute('aria-hidden','true');
+  v.innerHTML='<span class="estela"></span><span class="avion"><svg viewBox="0 0 24 24"><path fill="#276359" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span>';
+  top.appendChild(v);
+  var avion=v.querySelector('.avion'), estela=v.querySelector('.estela');
+  function pinta(){
+    var max=document.documentElement.scrollHeight-innerHeight;
+    var p=max>0?Math.min(1,Math.max(0,scrollY/max)):0;
+    var x=4+(v.clientWidth-46)*p;
+    avion.style.transform='translateX('+x.toFixed(1)+'px)';
+    estela.style.width=Math.max(0,x-8).toFixed(1)+'px';
+  }
+  addEventListener('scroll',pinta,{passive:true}); addEventListener('resize',pinta);
+  addEventListener('load',pinta); pinta();
 })();
 </script>
 </body></html>
