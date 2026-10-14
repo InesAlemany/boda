@@ -246,12 +246,10 @@ footer .grito span{color:var(--crema)}
 @keyframes flota{0%,100%{translate:0 0}50%{translate:0 -4px}}
 @keyframes salta{0%,100%{translate:0 0;rotate:0deg}35%{translate:0 -12px;rotate:-6deg}65%{translate:0 -3px;rotate:3deg}}
 @keyframes saluda{0%,45%,100%{rotate:0deg}8%{rotate:-9deg}16%{rotate:8deg}24%{rotate:-7deg}32%{rotate:5deg}40%{rotate:-2deg}}
-@keyframes gira{to{rotate:360deg}}
 .vivo{animation:flota 3.4s ease-in-out var(--dl,0s) infinite}
 .vivo.saluda{animation:saluda 4s ease-in-out var(--dl,0s) infinite;transform-origin:50% 90%}
 .vivo.salta{animation:salta .6s ease-out}
-.env-dood{display:inline-block;width:22px;height:auto;vertical-align:middle;margin:-4px 10px 0 0;animation:gira 1.2s linear infinite}
-@media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta,.env-dood{animation:none}}
+@media (prefers-reduced-motion:reduce){.vivo,.vivo.saluda,.vivo.salta{animation:none}}
 </style>
 </head>
 <body>
@@ -533,8 +531,7 @@ document.querySelectorAll('.menu a').forEach(function(a){
 
       var boton=form.querySelector('.env');
       boton.disabled=true;
-      var an=document.querySelector('.accesos a[href="#ensaimada"] img');
-      boton.innerHTML=(an?'<img class="env-dood" src="'+an.src+'" alt="">':'')+'Enviando...';
+      boton.textContent='Enviando...';
 
       function listo(){
         var nom=datos.nombre.split(' ')[0];
