@@ -194,6 +194,16 @@ footer .grito span{color:var(--crema)}
 .rsvp-sec select option{color:#276359}
 .rsvp-sec input::placeholder{color:rgba(242,221,204,.45)}
 .rsvp-sec input:focus,.rsvp-sec select:focus{outline:0;border-bottom-color:var(--melo)}
+.asis{margin:0 0 22px}
+.asis-t{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,221,204,.8);margin-bottom:10px}
+.asis-op{display:flex;gap:8px;flex-wrap:wrap}
+.rsvp-sec .asis-op label{flex:1 1 140px;margin:0;letter-spacing:0;text-transform:none}
+.asis-op input{position:absolute;opacity:0;pointer-events:none}
+.asis-op span{display:block;text-align:center;padding:12px 10px;border-radius:99px;border:2px solid rgba(242,221,204,.45);
+  color:var(--crema);font-size:14px;font-weight:400;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.asis-op input:checked+span{background:var(--melo);border-color:var(--melo);color:var(--verde);font-weight:500}
+.asis-op input:focus-visible+span{outline:2px solid var(--melo);outline-offset:2px}
+#f-si[hidden]{display:none}
 .env{width:100%;margin-top:8px;background:var(--melo);color:var(--verde);border:0;border-radius:99px;
   padding:16px;font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.17em;text-transform:uppercase}
 
@@ -578,12 +588,21 @@ document.querySelectorAll('.menu a').forEach(function(a){
   <h2 class="tit" style="color:#F2DDCC;text-align:center">Decidnos si ven&iacute;s</h2>
   <p style="text-align:center;color:#F2DDCC;opacity:.9">Cuanto antes lo sepamos, mejor lo podemos organizar.</p>
   <form id="rsvp-form" novalidate>
+    <div class="asis" id="f-asis" role="radiogroup" aria-label="&iquest;Ven&iacute;s?">
+      <span class="asis-t">&iquest;Ven&iacute;s? <span style="color:var(--melo)">*</span></span>
+      <div class="asis-op">
+        <label><input type="radio" name="asis" value="si"><span>&iexcl;S&iacute;, all&iacute; nos vemos!</span></label>
+        <label><input type="radio" name="asis" value="no"><span>Esta vez no puede ser</span></label>
+      </div>
+    </div>
     <label>Nombre y apellido <span style="color:var(--melo)">*</span><input id="f-nombre" type="text" placeholder="Tu nombre" required></label>
+    <div id="f-si">
     <label>Cu&aacute;ntos ven&iacute;s <span style="color:var(--melo)">*</span><input id="f-num" type="number" min="1" max="12" value="1" required></label>
     <div id="f-acomp"></div>
     <label>Necesit&aacute;is autocar <span style="color:var(--melo)">*</span><select id="f-bus" required><option value="">Elegid una opci&oacute;n</option><option>S&iacute;</option><option>No, vamos por nuestra cuenta</option></select></label>
     <label>Men&uacute;s especiales o alergias<input type="text" placeholder="Sin gluten, men&uacute; infantil..."></label>
     <label>Una canci&oacute;n que os haga bailar<input type="text" placeholder="La que sea, se la pasamos al DJ"></label>
+    </div>
     <p id="f-error" style="display:none;color:var(--melo);font-size:14px;margin:0 0 10px"></p>
     <button class="env" type="submit">Enviar confirmaci&oacute;n</button>
   </form>
@@ -620,6 +639,14 @@ document.querySelectorAll('.menu a').forEach(function(a){
         caja.appendChild(l);
       }
     }
+    var siDiv=document.getElementById('f-si');
+    function asis(){ var r=form.querySelector('input[name=asis]:checked'); return r?r.value:''; }
+    form.querySelectorAll('input[name=asis]').forEach(function(r){
+      r.addEventListener('change',function(){
+        siDiv.hidden=(asis()==='no');
+        form.querySelector('.env').textContent=asis()==='no'?'Enviar respuesta':'Enviar confirmaci\u00f3n';
+      });
+    });
     num.addEventListener('input', pintar);
     num.addEventListener('change', pintar);
     pintar();
@@ -629,13 +656,16 @@ document.querySelectorAll('.menu a').forEach(function(a){
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var faltan=[];
+      var faltan=[], vienen=asis()==='si';
+      if(!asis()) faltan.push('si ven\u00eds');
       if(!document.getElementById('f-nombre').value.trim()) faltan.push('tu nombre');
-      if(!num.value) faltan.push('cu\u00e1ntos ven\u00eds');
-      caja.querySelectorAll('.acomp').forEach(function(inp,i){
-        if(!inp.value.trim()) faltan.push('el nombre del acompañante '+(i+1));
-      });
-      if(!document.getElementById('f-bus').value) faltan.push('si necesitáis autocar');
+      if(vienen){
+        if(!num.value) faltan.push('cu\u00e1ntos ven\u00eds');
+        caja.querySelectorAll('.acomp').forEach(function(inp,i){
+          if(!inp.value.trim()) faltan.push('el nombre del acompañante '+(i+1));
+        });
+        if(!document.getElementById('f-bus').value) faltan.push('si necesitáis autocar');
+      }
 
       if(faltan.length){
         err.style.display='block';
@@ -648,12 +678,12 @@ document.querySelectorAll('.menu a').forEach(function(a){
       caja.querySelectorAll('.acomp').forEach(function(inp){ extras.push(inp.value.trim()); });
       var datos={
         nombre:   document.getElementById('f-nombre').value.trim(),
-        cuantos:  num.value,
-        acompanantes: extras.join(' | '),
-        asistencia: '',
-        autocar:  document.getElementById('f-bus').value,
-        alergias: form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-2].value.trim(),
-        cancion:  form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-1].value.trim()
+        cuantos:  vienen?num.value:'0',
+        acompanantes: vienen?extras.join(' | '):'',
+        asistencia: vienen?'Sí':'No',
+        autocar:  vienen?document.getElementById('f-bus').value:'',
+        alergias: vienen?form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-2].value.trim():'',
+        cancion:  vienen?form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-1].value.trim():''
       };
 
       var boton=form.querySelector('.env');
@@ -663,6 +693,11 @@ document.querySelectorAll('.menu a').forEach(function(a){
       function listo(){
         var nom=datos.nombre.split(' ')[0];
         document.getElementById('gr-nombre').textContent=nom?', '+nom:'';
+        if(!vienen){
+          document.querySelector('#gracias .gr-s').textContent='Os echaremos mucho de menos \u2665\uFE0E';
+          document.querySelector('#gracias .gr-txt').textContent='Hemos recibido vuestra respuesta.';
+          document.getElementById('gr-otra').textContent='Enviar otra respuesta';
+        }
         abrirGracias();
       }
 
