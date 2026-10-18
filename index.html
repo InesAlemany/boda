@@ -601,6 +601,14 @@ document.querySelectorAll('.menu a').forEach(function(a){
     </div>
     <label>Nombre y apellido <span style="color:var(--melo)">*</span><input id="f-nombre" type="text" placeholder="Tu nombre" required></label>
     <div id="f-si">
+    <div class="asis" id="f-vie" role="radiogroup" aria-label="&iquest;Te esperamos el viernes 16?">
+      <span class="asis-t">&iquest;Te esperamos el viernes 16? <span style="color:var(--melo)">*</span></span>
+      <div class="asis-op">
+        <label><input type="radio" name="viernes" value="S&iacute;"><span>&iexcl;S&iacute;!</span></label>
+        <label><input type="radio" name="viernes" value="No"><span>No, llegamos el s&aacute;bado</span></label>
+      </div>
+      <p id="f-vie-nota" hidden style="margin:12px 0 0;color:var(--melo);font-size:14px">Se estima preboda a las 19h00</p>
+    </div>
     <label>Cu&aacute;ntos ven&iacute;s <span style="color:var(--melo)">*</span><input id="f-num" type="number" min="1" max="12" value="1" required></label>
     <div id="f-acomp"></div>
     <label>Necesit&aacute;is autocar <span style="color:var(--melo)">*</span><select id="f-bus" required><option value="">Elegid una opci&oacute;n</option><option>S&iacute;</option><option>No, vamos por nuestra cuenta</option></select></label>
@@ -651,12 +659,18 @@ document.querySelectorAll('.menu a').forEach(function(a){
         form.querySelector('.env').textContent=asis()==='no'?'Enviar respuesta':'Enviar confirmaci\u00f3n';
       });
     });
+    function viernes(){ var r=form.querySelector('input[name=viernes]:checked'); return r?r.value:''; }
+    form.querySelectorAll('input[name=viernes]').forEach(function(r){
+      r.addEventListener('change',function(){
+        document.getElementById('f-vie-nota').hidden=(viernes()!=='Sí');
+      });
+    });
     num.addEventListener('input', pintar);
     num.addEventListener('change', pintar);
     pintar();
 
     // Pega aqui la URL que te da Apps Script al implementar (termina en /exec)
-    var RSVP_URL='https://script.google.com/macros/s/AKfycbyiWTmxauu0T_3DNZ076YPcNR1XtT3atCMwdSMtJaAo3sjzL909YtPVkl8bBz9wu0eLNA/exec';
+    var RSVP_URL='https://script.google.com/macros/s/AKfycbxq-ZJ1oS8R3t8Hp-eVgiRipfLWXtU5NtMUfvERFBeYPLHlfiNsx_geVprzjkau1gay_A/exec';
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
@@ -664,6 +678,7 @@ document.querySelectorAll('.menu a').forEach(function(a){
       if(!asis()) faltan.push('si ven\u00eds');
       if(!document.getElementById('f-nombre').value.trim()) faltan.push('tu nombre');
       if(vienen){
+        if(!viernes()) faltan.push('si venís el viernes 16');
         if(!num.value) faltan.push('cu\u00e1ntos ven\u00eds');
         caja.querySelectorAll('.acomp').forEach(function(inp,i){
           if(!inp.value.trim()) faltan.push('el nombre del acompañante '+(i+1));
@@ -687,7 +702,8 @@ document.querySelectorAll('.menu a').forEach(function(a){
         asistencia: vienen?'Sí':'No',
         autocar:  vienen?document.getElementById('f-bus').value:'',
         alergias: vienen?form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-2].value.trim():'',
-        cancion:  vienen?form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-1].value.trim():''
+        cancion:  vienen?form.querySelectorAll('input[type=text]')[form.querySelectorAll('input[type=text]').length-1].value.trim():'',
+        viernes:  vienen?viernes():''
       };
 
       var boton=form.querySelector('.env');
